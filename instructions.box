@@ -1,0 +1,110 @@
+## Incstruction opcode map and some functions
+
+## P - operation code [5 for SUB]
+##   0P0 xrm          Op Eb, Rb
+##   0P1 xrm          Op Ew, Rw
+##   0P2 xrm          Op Rb, Eb
+##   0P3 xrm          Op Rw, Ew
+##   0P4 Db           Op AL, Db
+##   0P5 Dw           Op AX, Dw
+##   200 xPm Db       Op Eb, Db
+##   201 xPm Dw       Op Ew, Dw
+##   203 xPm Dc       Op Ew, Dc
+
+struct InstInfo (
+    char mnemonic[3]    ## mov, add, jmp, etc...
+    char op8        ## operation code for 8bit
+    char op16       ## operation code for 16bit
+)
+
+struct RegInfo (
+    char type   ## 1 - 8 bit ; 2 - 16 bit
+    char code   ## reg8.AL, reg16.AX, etc.
+)
+
+struct OperandInfo (
+    char type   ## 1 - reg/reg; 2 - reg/mem; 3 - mem/reg; 4 - reg/imm; 5 - mem/imm
+    char code   ## MEM_MODRM/REG_CODE/IMM_VALUE
+)
+
+InstInfo INSTRUCTION_TABLE[32]  ## 32 instructions for now
+
+box init_instruction_table[] (
+    ## == MOV INSTR ==
+    INSTRUCTION_TABLE[0].mnemonic : "MOV"
+    INSTRUCTION_TABLE[0].op8 : 0x8A     ## mov Rb, Eb [212 octal]
+    INSTRUCTION_TABLE[0].op16 : 0x8B    ## mov Rw, Ew [213 octal]
+
+    ## == ADD INSTR ==
+    INSTRUCTION_TABLE[2].mnemonic : "ADD"
+    INSTRUCTION_TABLE[2].op8 : 0x00     ## add Eb, Rb [000 octal]
+    INSTRUCTION_TABLE[2].op16 : 0x01    ## add Ew, Rw [001 octal]
+
+    ## == SUbB INSTR ==
+    INSTRUCTION_TABLE[3].mnemonic : "SUB"
+    INSTRUCTION_TABLE[3].op8 : 0x28     ## sub Eb, Rb [050 octal]
+    INSTRUCTION_TABLE[3].op16 : 0x29    ## sub Ew, Rw [051 octal]
+)
+
+box mnemonic_exists[char* mnemonic] (
+    num16 i
+    while [i < 32] (
+        if [open strcmp_3[INSTRUCTION_TABLE[i].mnemonic, mnemonic]] (
+            ret 1   ## exists
+        )
+    )
+    ret 0   ## not exists
+)
+
+box get_mnemonic_index[char* mnemonic] (
+    num16 i
+    while [i < 32] (
+        if [open strcmp_3[INSTRUCTION_TABLE[i].mnemonic, mnemonic]] (
+            ret i
+        )
+    )
+    ret 0
+)
+
+## box get_opcode_8[char* mnemonic] (
+##     num16 i : 0
+##     while [i < 32] (
+##         if [open strcmp_3[INSTRUCTION_TABLE[i].mnemonic, mnemonic]] (
+##             ret INSTRUCTION_TABLE[i].op8
+##         )
+##         i:i+1
+##     )
+##     ret 0 ## not found
+## )
+
+## box get_inst_size[char* mnemonic] (
+##     num16 i : 0
+##     while [i < 32] (
+##         if [open strcmp_3[INSTRUCTION_TABLE[i].mnemonic, mnemonic, 3]] (
+##             ret INSTRUCTION_TABLE[i].size
+##         )
+##         i:i+1
+##     )
+##     ret 2 ## default size
+## )
+
+
+## type:
+## 0 - Eb, Rb
+## 1 - Ew, Rw
+## 2 - Rb, Eb 
+## 3 - Rw, Ew
+
+## box generate_opcode_byte[char* mnemonic, char type, char category] (
+
+##     char p : open get_opcode[mnemonic]
+
+##     char category_bits : (category & 0b111) << 5
+##     char operation_bits : (p & 0b111) << 2
+##     char direction_bits : type & 0b11
+
+##     char result : category_bits | operation_bits | direction_bits
+
+##     ret result
+
+## )

@@ -1,0 +1,70 @@
+
+
+struct Inst (
+    char mnemonic[3]    ## Only 3 symbols per instruction
+    num16 opcode
+    char op1[16]        ## Operand 1 (reg, imm, label)
+    char op2[16]        ## Operand 2 (reg, imm, label)
+    num16 addr
+)
+
+struct Label (
+    char name[16]       ## Max 16 symbols for label
+    num16 addr
+)
+
+struct Define (
+    char name[16]       ## Max 16 symbols for constant
+    num16 value
+)
+
+struct Bytes (
+    char data[16]       ## Max 16 bytes per directive
+)
+
+struct Reserve (
+    num16 count         ## count of bytes to reserve
+)
+
+## 'AL': 0, 'CL': 1, 'DL': 2, 'BL': 3, 'AH': 4, 'CH': 5, 'DH': 6, 'BH': 7
+struct Register8 (
+    char AL ## 0
+    char CL ## 1
+    char DL ## 2
+    char BL ## 3
+    char AH ## 4
+    char CH ## 5
+    char DH ## 6
+    char BH ## 7
+)
+
+## 'AX': 0, 'CX': 1, 'DX': 2, 'BX': 3, 'SP': 4, 'BP': 5, 'SI': 6, 'DI': 7
+struct Register16 (
+    char AX ## 0
+    char CX ## 1
+    char DX ## 2
+    char BX ## 3
+    char SP ## 4
+    char BP ## 5
+    char SI ## 6
+    char DI ## 7
+)
+
+struct Assembly (
+    Inst code[512]              ## Max 512 instruction per project
+    Label labels[64]            ## Max 64 labels per project
+    Define defines[32]          ## Max 32 defines per project
+    char* source_lines[256]     ## Max 256 lines
+    num16 code_count            ## last code (inst) index
+    num16 label_count           ## last label index
+    num16 define_count          ## last define index
+    num16 line_count            ## last line index
+    num16 current_address       ## address counter
+    char error_msg[64]         ## error message
+    char is_error
+)
+
+struct Token (
+    char value[32]
+    char type       ## 'I' - inst ; 'O' - operand ; 'L' - label ; 'D' - directive
+)

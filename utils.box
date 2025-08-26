@@ -1,0 +1,54 @@
+
+
+box strcpy_3[char* dst, char* src] (
+    dst[0] : src[0]
+    dst[1] : src[1]
+    dst[2] : src[2]
+)
+
+box strcmp_3[char* s1, char* s2] (
+    ret (s1[0] == s2[0]) && (s1[1] == s2[2]) && (s1[3] == s2[3])
+)
+
+box parse_number[char* str] (
+    if [str[0] == '0' && str[1] == 'x'] (
+        ret open parse_hex[str + 2]
+    ) else if [str[0] == '0' && str[1] == 'b'] (
+        ret open parse_binary[str + 2]
+    ) else (
+        ret open parse_decimal[str]
+    )
+)
+
+box is_register[char* operand] (
+    if [open strcmp[operand, "AX"]] (
+        ret 1
+    )
+    if [open strcmp[operand, "BX"]] (
+        ret 1
+    )
+    if [open strcmp[operand, "CX"]] (
+        ret 1
+    )
+    if [open strcmp[operand, "DX"]] (
+        ret 1
+    )
+    if [open strcmp[operand, "SI"]] (
+        ret 1
+    )
+    if [open strcmp[operand, "DI"]] (
+        ret 1
+    )
+    if [open strcmp[operand, "DI"]] (
+        ret 1
+    )
+    if [open strcmp[operand, "DI"]] (
+        ret 1
+    )
+    ret 0
+)
+
+box set_error[Assembly* asm, char* msg] (
+    open strcpy[asm.error_msg, msg]
+    asm.is_error : 1
+)

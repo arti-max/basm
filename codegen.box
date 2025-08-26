@@ -1,0 +1,17 @@
+
+box generate_binary[Assembly* asm, char* filename] (
+    open print_string[filename]
+    open print_newline[]
+)
+
+box gen_insutrction[Assembly* asm, char* mnemonic, RegInfo reg1, RegInfo reg2] (
+    char size
+
+    if [reg1.type == 1 && reg2.type == 1] (
+        size : 8
+    ) else if [reg1.type == 2 && reg2.type == 2] (
+        size : 16
+    ) else (
+        open set_error[asm, "Mismatch in operand type"]
+    )
+)

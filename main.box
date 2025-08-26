@@ -1,0 +1,64 @@
+@bits 16
+@incl <pros/stdlib>
+@incl "structs.box"
+@incl "tokenizer.box"
+@incl "parser.box"
+@incl "codegen.box"
+@incl "instructions.box"
+@incl "utils.box"
+
+Register8 reg8              ## reg8 struct for codegen
+Register16 reg16            ## reg16 struct for codegen
+
+box _start[] (
+    open init_all_colors_structs[]
+    Assembly basm
+
+    num16 hex_num : 0x02
+    char text_buffer[12]
+    open itoa_base[hex_num, text_buffer, 10]
+    open print_string[text_buffer]
+    open print_newline[]
+    open print_hex[hex_num]
+    open print_newline[]
+    open print_binary[hex_num]
+    open print_newline[]
+    
+
+    ## standard declarations
+    basm.code_count : 0
+    basm.label_count : 0
+    basm.define_count : 0
+    basm.current_address : 0
+    basm.is_error : 0
+    ## register structs
+    ##reg8.AL already 0
+    reg8.CL : 1
+    reg8.DL : 2
+    reg8.BL : 3
+    reg8.AH : 4
+    reg8.CH : 5
+    reg8.DH : 6
+    reg8.BH : 7
+
+    reg16.CX : 1
+    reg16.DX : 2
+    reg16.BX : 3
+    reg16.SP : 4
+    reg16.BP : 5
+    reg16.SI : 6
+    reg16.DI : 7
+
+
+    
+    open init_instruction_table[]
+    
+    open parse_line[&basm, "start:", 1]
+    open parse_line[&basm, "MOV AX, 5", 2]  
+    open parse_line[&basm, "ADD AX, 10", 3]
+    open parse_line[&basm, "JMP start", 4]
+    
+    open generate_binary[&basm, "output.bin"]
+    
+    open print_string["Assembly completed!"]
+)
